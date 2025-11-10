@@ -34,6 +34,11 @@
         .total-linha:last-child { border-right: none; }
         .total-linha span { color: #d32f2f; margin-left: 5px; }
 
+        /* --- NOVO: Estilo para o botão de voltar --- */
+        .area-voltar { text-align: center; margin-bottom: 15px; }
+        #btn-voltar { background-color: #6c757d; padding: 8px 15px; text-decoration: none; border-radius: 5px; color: white; font-weight: bold; display: inline-block; }
+
+
         /* --- ESTILOS DO RANKING GERAL (TRIMESTRE) --- */
         .ranking-trimestral-container {
             margin-top: 40px;
@@ -93,6 +98,10 @@
     <div class="logo-area">
         <div style="font-size: 28px; font-weight: bold; color: #000080;">ADOCI JARDIM MARÍLIA</div>
         <div style="font-size: 16px; color: #808080;">EBS - RELATÓRIO DE FREQUÊNCIA</div>
+    </div>
+    
+    <div class="area-voltar">
+        <a href="index.html" id="btn-voltar">🏠 Voltar para a Página Inicial</a>
     </div>
 
     <div class="info-cabecalho">
@@ -519,7 +528,9 @@
             
             document.querySelectorAll('#corpo-tabela-alunos .linha-aluno').forEach((linha, index) => {
                 const aluno = dadosAlunosSessao[index];
-                conteudo += `${(index + 1).toString().padStart(2, '0')};${aluno.nome};${aluno.presente ? 'SIM' : 'NÃO'};${aluno.visitantes};${aluno.revista ? 'SIM' : 'NÃO'};${aluno.biblia ? 'SIM' : 'NÃO'};${aluno.oferta ? 'SIM' : 'NÃO'};${aluno.pontuacao}\n`;
+                // Certifica-se de remover qualquer ; ou \n do nome para não quebrar o CSV
+                const nomeSeguro = aluno.nome.replace(/[,;\n]/g, ' ').trim();
+                conteudo += `${(index + 1).toString().padStart(2, '0')};${nomeSeguro};${aluno.presente ? 'SIM' : 'NÃO'};${aluno.visitantes};${aluno.revista ? 'SIM' : 'NÃO'};${aluno.biblia ? 'SIM' : 'NÃO'};${aluno.oferta ? 'SIM' : 'NÃO'};${aluno.pontuacao}\n`;
             });
 
             // Gerar download do arquivo CSV
