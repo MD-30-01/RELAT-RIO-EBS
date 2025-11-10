@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EBS Relatório de Frequência - CLASSE DOS JOVENS</title>
+    <title>EBS Relatório de Frequência - CLASSE DOS ADOLESCENTES</title>
     <style>
         /* --- ESTILOS CSS BASE --- */
         body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
@@ -26,6 +26,7 @@
         .botoes-acao { text-align: center; margin-top: 10px; }
         .btn-remover { padding: 3px 8px; background-color: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer; }
         .coluna-acoes { width: 40px; }
+        .coluna-pontos { font-weight: bold; color: #1e8449; } /* Cor para pontuação na tabela */
         .tabela-totais { margin-top: 30px; padding: 15px; border: 1px solid #007bff; background-color: #f9fcff; display: flex; flex-wrap: wrap; justify-content: space-around; font-size: 14px; }
         .tabela-totais h2 { width: 100%; margin: 0 0 10px 0; text-align: left; border: none; }
         .total-linha { font-weight: bold; padding: 5px 15px; border-right: 1px solid #ccc; }
@@ -67,18 +68,63 @@
         }
         .aluno-desempenho-card .nome {
             font-weight: bold;
-            width: 40%;
+            width: 30%; /* Ajustado para caber a pontuação */
             text-align: left;
             color: #555;
         }
         .aluno-desempenho-card .status {
-            width: 15%;
+            width: 14%;
             font-size: 16px;
+            text-align: center;
+        }
+        .aluno-desempenho-card .pontos-totais {
+            width: 10%;
+            font-weight: bold;
+            color: #1e8449; /* Verde escuro para pontuação */
             text-align: center;
         }
         .status-ok { color: #4CAF50; } /* Verde */
         .status-fail { color: #f44336; } /* Vermelho */
-        .status-label { font-weight: bold; font-size: 12px; margin-left: 5px; color: #777; }
+
+        /* --- ESTILOS DO RANKING --- */
+        .ranking-container {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f0f8ff;
+            border: 2px solid #4682b4;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .ranking-container h2 {
+            color: #4682b4;
+            border-bottom: 2px solid #4682b4;
+            margin-bottom: 15px;
+        }
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .ranking-item .posicao {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        .ranking-item .nome {
+            flex-grow: 1;
+            font-weight: bold;
+            color: #007bff;
+            text-align: left;
+        }
+        .ranking-item .pontos {
+            font-size: 18px;
+            font-weight: 900;
+            color: #1e8449;
+        }
     </style>
 </head>
 <body>
@@ -92,7 +138,7 @@
         <div class="campo-info"><label for="data-relatorio">DATA:</label><input type="text" id="data-relatorio" placeholder="DD/MM/AAAA"></div>
         <div class="campo-info"><label for="hora-relatorio">HORA:</label><input type="text" id="hora-relatorio" placeholder="Ex: 9:00h"></div>
         <div class="campo-info"><label for="professor">PROFESSOR(A):</label><input type="text" id="professor" placeholder="Nome do Professor"></div>
-        <div class="campo-info"><label for="turma">TURMA:</label><input type="text" id="turma" value="JOVENS" readonly style="font-weight: bold; color: #007bff;"></div>
+        <div class="campo-info"><label for="turma">TURMA:</label><input type="text" id="turma" value="ADOLESCENTES" readonly style="font-weight: bold; color: #007bff;"></div>
         <div class="campo-info"><label for="licao-relatorio">LIÇÃO:</label><input type="text" id="licao-relatorio" placeholder="Nº da Lição"></div>
         <div class="campo-info"><label for="tema-relatorio">TEMA:</label><input type="text" id="tema-relatorio" placeholder="Tema da Aula"></div>
     </div>
@@ -107,12 +153,12 @@
             <tr>
                 <th>Nº</th>
                 <th class="aluno-nome">NOME</th>
-                <th>PRESENÇA</th>
-                <th>VISITANTES</th>
-                <th>REVISTA</th>
+                <th>MATRI (Presença)</th>
+                <th>VIST (Visitante)</th>
+                <th>REVIST (Revista)</th>
                 <th>BÍBLIA</th>
-                <th>OFETAS</th>
-                <th class="coluna-acoes">Ações</th>
+                <th>OFET (Oferta)</th>
+                <th>PONTOS</th> <th class="coluna-acoes">Ações</th>
             </tr>
         </thead>
         <tbody id="corpo-tabela-alunos">
@@ -124,7 +170,7 @@
                 <td><input type="checkbox" class="revista" onchange="calcularTotais()"></td>
                 <td><input type="checkbox" class="biblia" onchange="calcularTotais()"></td>
                 <td><input type="checkbox" class="oferta" onchange="calcularTotais()"></td>
-                <td class="coluna-acoes"><button class="btn-remover" onclick="removerAluno(this)">X</button></td>
+                <td class="coluna-pontos"><span class="pontos-aluno">0</span></td> <td class="coluna-acoes"><button class="btn-remover" onclick="removerAluno(this)">X</button></td>
             </tr>
             
             <tr class="linha-aluno">
@@ -134,27 +180,30 @@
                 <td><input type="number" class="visitantes" min="0" value="0" oninput="calcularTotais()"></td>
                 <td><input type="checkbox" class="revista" onchange="calcularTotais()" checked></td>
                 <td><input type="checkbox" class="biblia" onchange="calcularTotais()" checked></td>
-                <td><input type="checkbox" class="oferta" onchange="calcularTotais"></td>
+                <td><input type="checkbox" class="oferta" onchange="calcularTotais()"></td>
+                <td class="coluna-pontos"><span class="pontos-aluno">0</span></td>
                 <td class="coluna-acoes"><button class="btn-remover" onclick="removerAluno(this)">X</button></td>
             </tr>
             <tr class="linha-aluno">
                 <td><span class="num-aluno">02</span></td>
                 <td class="aluno-nome"><input type="text" class="nome-aluno" value="Exemplo Aluno B" placeholder="Nome do Aluno"></td>
                 <td><input type="checkbox" class="presenca" onchange="calcularTotais()" checked></td>
-                <td><input type="number" class="visitantes" min="0" value="0" oninput="calcularTotais()"></td>
-                <td><input type="checkbox" class="revista" onchange="calcularTotais"></td>
+                <td><input type="number" class="visitantes" min="0" value="1" oninput="calcularTotais()"></td>
+                <td><input type="checkbox" class="revista" onchange="calcularTotais()"></td>
                 <td><input type="checkbox" class="biblia" onchange="calcularTotais()" checked></td>
                 <td><input type="checkbox" class="oferta" onchange="calcularTotais()" checked></td>
+                <td class="coluna-pontos"><span class="pontos-aluno">0</span></td>
                 <td class="coluna-acoes"><button class="btn-remover" onclick="removerAluno(this)">X</button></td>
             </tr>
             <tr class="linha-aluno">
                 <td><span class="num-aluno">03</span></td>
                 <td class="aluno-nome"><input type="text" class="nome-aluno" value="Exemplo Aluno C (Ausente)" placeholder="Nome do Aluno"></td>
-                <td><input type="checkbox" class="presenca" onchange="calcularTotais"></td>
+                <td><input type="checkbox" class="presenca" onchange="calcularTotais()"></td>
                 <td><input type="number" class="visitantes" min="0" value="0" oninput="calcularTotais()"></td>
-                <td><input type="checkbox" class="revista" onchange="calcularTotais"></td>
-                <td><input type="checkbox" class="biblia" onchange="calcularTotais"></td>
-                <td><input type="checkbox" class="oferta" onchange="calcularTotais"></td>
+                <td><input type="checkbox" class="revista" onchange="calcularTotais()"></td>
+                <td><input type="checkbox" class="biblia" onchange="calcularTotais()"></td>
+                <td><input type="checkbox" class="oferta" onchange="calcularTotais()"></td>
+                <td class="coluna-pontos"><span class="pontos-aluno">0</span></td>
                 <td class="coluna-acoes"><button class="btn-remover" onclick="removerAluno(this)">X</button></td>
             </tr>
         </tbody>
@@ -193,6 +242,12 @@
             <span id="revista-percentual" class="value">0%</span>
         </div>
     </div>
+    
+    <div class="ranking-container">
+        <h2>🏆 TOP 3 - RANKING DE DESEMPENHO</h2>
+        <div id="container-ranking">
+            </div>
+    </div>
 
     <div class="desempenho-individual-container">
         <h2>🧑‍🎓 ANÁLISE DE DESEMPENHO INDIVIDUAL</h2>
@@ -202,35 +257,65 @@
             <div class="status">BÍBLIA</div>
             <div class="status">REVISTA</div>
             <div class="status">OFERTA</div>
-        </div>
+            <div class="pontos-totais">PONTOS</div> </div>
         <div id="container-desempenho-alunos">
             </div>
     </div>
 
     <script>
         // --- FUNÇÕES JAVASCRIPT ---
-        function analisarDesempenhoIndividual(linhasAlunos) {
+
+        function gerarRanking(dadosAlunos) {
+            const rankingContainer = document.getElementById('container-ranking');
+            rankingContainer.innerHTML = '';
+
+            // Filtrar apenas alunos com pontuação > 0
+            const alunosValidos = dadosAlunos.filter(a => a.pontuacao > 0);
+
+            // Classificar (Rankear) - maior pontuação primeiro.
+            alunosValidos.sort((a, b) => b.pontuacao - a.pontuacao);
+
+            // Exibir os resultados (Top 3)
+            alunosValidos.slice(0, 3).forEach((aluno, index) => {
+                const posicao = index + 1;
+                let icone = '';
+                if (posicao === 1) icone = '🥇';
+                else if (posicao === 2) icone = '🥈';
+                else if (posicao === 3) icone = '🥉';
+                else icone = `${posicao}.`;
+
+                const html = `
+                    <div class="ranking-item">
+                        <span class="posicao">${icone}</span>
+                        <span class="nome">${aluno.nome}</span>
+                        <span class="pontos">${aluno.pontuacao} Pts</span>
+                    </div>
+                `;
+                rankingContainer.innerHTML += html;
+            });
+            
+            if (alunosValidos.length === 0) {
+                 rankingContainer.innerHTML = '<div style="text-align: center; color: #999;">Nenhum aluno com pontuação registrada.</div>';
+            }
+        }
+
+        function analisarDesempenhoIndividual(linhasAlunos, dadosAlunos) {
             const container = document.getElementById('container-desempenho-alunos');
             container.innerHTML = ''; 
 
-            linhasAlunos.forEach(linha => {
-                const nomeAluno = linha.querySelector('.nome-aluno').value || 'Aluno Sem Nome';
-                const presente = linha.querySelector('.presenca').checked;
-                const biblia = linha.querySelector('.biblia').checked;
-                const revista = linha.querySelector('.revista').checked;
-                const oferta = linha.querySelector('.oferta').checked;
+            // Função para gerar o ícone de status
+            const getStatusIcon = (checked) => 
+                `<span class="status-icon ${checked ? 'status-ok' : 'status-fail'}">${checked ? '✅' : '❌'}</span>`;
 
-                // Função para gerar o ícone de status
-                const getStatusIcon = (checked) => 
-                    `<span class="status-icon ${checked ? 'status-ok' : 'status-fail'}">${checked ? '✅' : '❌'}</span>`;
-
+            dadosAlunos.forEach(aluno => {
                 const html = `
                     <div class="aluno-desempenho-card">
-                        <div class="nome">${nomeAluno}</div>
-                        <div class="status">${getStatusIcon(presente)}</div>
-                        <div class="status">${presente ? getStatusIcon(biblia) : getStatusIcon(false)}</div> 
-                        <div class="status">${presente ? getStatusIcon(revista) : getStatusIcon(false)}</div>
-                        <div class="status">${presente ? getStatusIcon(oferta) : getStatusIcon(false)}</div>
+                        <div class="nome">${aluno.nome}</div>
+                        <div class="status">${getStatusIcon(aluno.presente)}</div>
+                        <div class="status">${aluno.presente ? getStatusIcon(aluno.biblia) : getStatusIcon(false)}</div> 
+                        <div class="status">${aluno.presente ? getStatusIcon(aluno.revista) : getStatusIcon(false)}</div>
+                        <div class="status">${aluno.presente ? getStatusIcon(aluno.oferta) : getStatusIcon(false)}</div>
+                        <div class="pontos-totais">${aluno.pontuacao} Pts</div>
                     </div>
                 `;
                 container.innerHTML += html;
@@ -241,18 +326,54 @@
             const linhasAlunos = document.querySelectorAll('#corpo-tabela-alunos .linha-aluno:not(.modelo)');
             
             let totalPresenca = 0; let totalBiblia = 0; let totalVisitantes = 0; let totalRevista = 0; let totalOferta = 0;
-            
-            // 1. Itera sobre os alunos para calcular os totais e a numeração
+            const dadosAlunos = []; // Array para armazenar dados dos alunos, incluindo a pontuação
+
             linhasAlunos.forEach((linha, index) => {
                 linha.querySelector('.num-aluno').textContent = (index + 1).toString().padStart(2, '0');
 
-                if (linha.querySelector('.presenca').checked) { totalPresenca++; }
-                if (linha.querySelector('.biblia').checked) { totalBiblia++; }
-                if (linha.querySelector('.revista').checked) { totalRevista++; }
-                if (linha.querySelector('.oferta').checked) { totalOferta++; }
+                const nome = linha.querySelector('.nome-aluno').value || `Aluno ${index + 1}`;
+                const presente = linha.querySelector('.presenca').checked;
+                const biblia = linha.querySelector('.biblia').checked;
+                const revista = linha.querySelector('.revista').checked;
+                const oferta = linha.querySelector('.oferta').checked;
+                const visitantes = parseInt(linha.querySelector('.visitantes').value) || 0;
 
-                const valorVisitantes = parseInt(linha.querySelector('.visitantes').value) || 0;
-                totalVisitantes += valorVisitantes;
+                // --- CALCULAR PONTUAÇÃO INDIVIDUAL ---
+                let pontuacaoTotal = 0;
+                const pontos = { presenca: 1, biblia: 1, revista: 2, oferta: 2, visitantes: 3 };
+
+                // Ponto de Presença
+                if (presente) {
+                    pontuacaoTotal += pontos.presenca;
+                    
+                    // Pontos de Materiais (só se estiver presente)
+                    if (biblia) { pontuacaoTotal += pontos.biblia; }
+                    if (revista) { pontuacaoTotal += pontos.revista; }
+                    if (oferta) { pontuacaoTotal += pontos.oferta; }
+                }
+                
+                // Pontos de Visitantes (sempre contam)
+                pontuacaoTotal += visitantes * pontos.visitantes;
+
+                // Atualizar PONTOS na tabela principal
+                linha.querySelector('.pontos-aluno').textContent = pontuacaoTotal;
+                
+                // Armazenar dados para Ranking e Análise
+                dadosAlunos.push({
+                    nome: nome,
+                    pontuacao: pontuacaoTotal,
+                    presente: presente,
+                    biblia: biblia,
+                    revista: revista,
+                    oferta: oferta
+                });
+
+                // --- ATUALIZAR TOTAIS GERAIS ---
+                if (presente) { totalPresenca++; }
+                if (biblia) { totalBiblia++; }
+                if (revista) { totalRevista++; }
+                if (oferta) { totalOferta++; }
+                totalVisitantes += visitantes;
             });
 
             const totalMatriculados = linhasAlunos.length;
@@ -265,7 +386,6 @@
             document.getElementById('total_oferta').textContent = totalOferta;
 
             // 3. Cálculo do Dashboard de Classe
-            
             const presencaPercentual = totalMatriculados > 0 
                 ? ((totalPresenca / totalMatriculados) * 100).toFixed(0) 
                 : 0;
@@ -276,7 +396,6 @@
             const revistaPercentual = ((totalRevista / baseParaMateriais) * 100).toFixed(0);
 
             // 4. Atualizar o Dashboard HTML
-            
             document.getElementById('presenca-percentual').textContent = `${presencaPercentual}%`;
             const presencaBar = document.getElementById('presenca-bar');
             presencaBar.style.width = `${presencaPercentual}%`;
@@ -293,8 +412,9 @@
             revistaBar.style.width = `${revistaPercentual}%`;
             revistaBar.textContent = `${revistaPercentual}%`;
 
-            // 5. Chamar a função de análise individual (NOVO)
-            analisarDesempenhoIndividual(linhasAlunos);
+            // 5. Chamar o Ranking e a análise individual
+            analisarDesempenhoIndividual(linhasAlunos, dadosAlunos);
+            gerarRanking(dadosAlunos);
 
             return { totalPresenca, totalVisitantes, totalRevista, totalBiblia, totalOferta };
         }
@@ -313,6 +433,9 @@
                 else if (input.type === 'number') { input.value = 0; }
             });
 
+            // Reinicia o valor de pontos
+            novaLinha.querySelector('.pontos-aluno').textContent = '0';
+            
             document.getElementById('corpo-tabela-alunos').appendChild(novaLinha);
             calcularTotais();
         }
@@ -349,7 +472,7 @@
             conteudo += `--------------------------------------------------\n\n`;
 
             conteudo += `DETALHES DOS ALUNOS:\n`;
-            conteudo += `Nº;NOME;MATRI (Presença);VIST;REVIST;BÍBLIA;OFET\n`;
+            conteudo += `Nº;NOME;MATRI (Presença);VIST;REVIST;BÍBLIA;OFET;PONTOS\n`;
             
             document.querySelectorAll('#corpo-tabela-alunos .linha-aluno:not(.modelo)').forEach(linha => {
                 const num = linha.querySelector('.num-aluno').textContent;
@@ -359,8 +482,9 @@
                 const revista = linha.querySelector('.revista').checked ? 'SIM' : 'NÃO';
                 const biblia = linha.querySelector('.biblia').checked ? 'SIM' : 'NÃO';
                 const oferta = linha.querySelector('.oferta').checked ? 'SIM' : 'NÃO';
+                const pontos = linha.querySelector('.pontos-aluno').textContent;
 
-                conteudo += `${num};${nome};${presenca};${visitantes};${revista};${biblia};${oferta}\n`;
+                conteudo += `${num};${nome};${presenca};${visitantes};${revista};${biblia};${oferta};${pontos}\n`;
             });
 
             const nomeArquivo = `Relatorio_EBS_${turma}_${data.replace(/\//g, '_')}.txt`;
