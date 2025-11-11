@@ -96,9 +96,10 @@
 <body>
 
     <div class="logo-area">
+        <img src="logo.png" alt="Logo ADOCI Jardim Marília" style="max-height: 80px; margin-bottom: 10px;"> 
         <div style="font-size: 28px; font-weight: bold; color: #000080;">ADOCI JARDIM MARÍLIA</div>
         <div style="font-size: 16px; color: #808080;">EBS - RELATÓRIO DE FREQUÊNCIA</div>
-    </div>
+        </div>
     
     <div class="area-voltar">
         <a href="index.html" id="btn-voltar">🏠 Voltar para a Página Inicial</a>
@@ -184,7 +185,7 @@
 
         function getAlunosMatriculados() {
             const alunosJson = localStorage.getItem(KEY_ALUNOS);
-            return alunosJson ? JSON.parse(alunosJson) : ["Aluno Teste A", "Aluno Teste B"]; // Nomes iniciais
+            return alunosJson ? JSON.parse(alunosJson) : []; 
         }
 
         function setAlunosMatriculados(alunos) {
@@ -453,15 +454,15 @@
         }
 
         function carregarAlunosIniciais() {
-            const alunos = getAlunosMatriculados();
+            let alunos = getAlunosMatriculados();
             const corpoTabela = document.getElementById('corpo-tabela-alunos');
             corpoTabela.innerHTML = ''; // Limpa a tabela antes de carregar
 
             if (alunos.length === 0) {
-                 // Adiciona 2 alunos de exemplo se a lista estiver vazia
-                 adicionarAluno('Exemplo Aluno 1');
-                 adicionarAluno('Exemplo Aluno 2');
-                 return;
+                 // CORREÇÃO 2: Se a lista estiver vazia (primeiro acesso/reset), 
+                 // adiciona os alunos de teste E SALVA IMEDIATAMENTE.
+                 alunos = ["Aluno Teste A", "Aluno Teste B"];
+                 setAlunosMatriculados(alunos); // AGORA A LISTA É SALVA!
             }
 
             alunos.forEach(nome => {
