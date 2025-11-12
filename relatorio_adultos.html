@@ -114,20 +114,20 @@
 <body>
 
     <div class="logo-area">
-        <img src="logo.png.webp" alt="Logo ADOCI Jardim Marília" style="max-height: 100px; margin-bottom: 20px;"> 
+        <img src="logo.png.webp" alt="Logo ADOCI Jardim Marília" style="max-height: 150px; margin-bottom: 10px;"> 
         <div style="font-size: 28px; font-weight: bold; color: #000080;">ADOCI JARDIM MARÍLIA</div>
-        <div style="font-size: 16px; color: #808080;">EBS - RELATÓRIO DE FREQUÊNCIA</div>
+        <div style="font-size: 18px; color: #808080;">EBS - RELATÓRIO DE FREQUÊNCIA</div>
+        <div style="font-size: 20px; color: #1e8bd4;">CLASSE DOS ADULTOS</div>
     </div>
     
     <div class="area-voltar">
-        <a href="index.html" id="btn-voltar">🏠 Voltar para a Página Inicial</a>
+        <a href="index.html" id="btn-voltar">🏠</a>
     </div>
 
     <div class="info-cabecalho">
         <div class="campo-info"><label for="data-relatorio">DATA:</label><input type="date" id="data-relatorio"></div>
         <div class="campo-info"><label for="hora-relatorio">HORA:</label><input type="time" id="hora-relatorio"></div>
         <div class="campo-info"><label for="professor">PROFESSOR(A):</label><input type="text" id="professor" placeholder="Nome do Professor"></div>
-        <div class="campo-info"><label for="turma">TURMA:</label><input type="text" id="turma" value="ADULTOS" readonly style="font-weight: bold; color: #007bff;"></div>
         <div class="campo-info"><label for="licao-relatorio">LIÇÃO:</label><input type="text" id="licao-relatorio" placeholder="Nº da Lição"></div>
         <div class="campo-info"><label for="tema-relatorio">TEMA:</label><input type="text" id="tema-relatorio" placeholder="Tema da Aula"></div>
     </div>
@@ -145,6 +145,7 @@
                 <th>Nº</th>
                 <th class="aluno-nome">NOME</th>
                 <th>PRESENÇA</th>
+                <th>AUSENTES</th>
                 <th>VISITANTES</th>
                 <th>REVISTA</th>
                 <th>BÍBLIA</th>
@@ -162,6 +163,8 @@
         <h2>TOTAIS GERAIS</h2>
         <div class="total-linha"> AULAS SALVAS: <span id="total_aulas_salvas">0</span> </div>
         <div class="total-linha"> MATRICULADOS: <span id="total_matriculados">0</span> </div>
+        <div class="total-linha"> PRESENTES: <span id="total_presentes">0</span> </div>
+        <div class="total-linha"> AUSENTES: <span id="total_ausentes">0</span> </div>
         <div class="total-linha"> VISITANTES: <span id="total_visitantes">0</span> </div>
         <div class="total-linha"> REVISTAS: <span id="total_revista">0</span> </div>
         <div class="total-linha"> BÍBLIAS: <span id="total_biblia">0</span> </div>
@@ -431,6 +434,7 @@
                 <td><span class="num-aluno">${(numeroAlunos + 1).toString().padStart(2, '0')}</span></td>
                 <td class="aluno-nome"><input type="text" class="nome-aluno" value="${novoNome}" placeholder="Nome do Aluno" oninput="atualizarNomeAluno(this)"></td>
                 <td><input type="checkbox" class="presenca" onchange="calcularTotais()"></td>
+                <td><input type="checkbox" class="ausentes" onchange="calcularTotais()"></td>
                 <td><input type="number" class="visitantes" min="0" value="0" oninput="calcularTotais()"></td>
                 <td><input type="checkbox" class="revista" onchange="calcularTotais()"></td>
                 <td><input type="checkbox" class="biblia" onchange="calcularTotais()"></td>
