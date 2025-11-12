@@ -13,7 +13,10 @@
         .info-cabecalho { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; }
         .campo-info { display: flex; align-items: center; }
         .campo-info label { font-weight: bold; margin-right: 5px; white-space: nowrap; }
-        .info-cabecalho input[type="text"] { padding: 5px; border: 1px solid #ccc; width: 120px; }
+        /* Removido input[type="text"] para não afetar type="date" e type="time" */
+        .info-cabecalho input[type="text"], 
+        .info-cabecalho input[type="date"], 
+        .info-cabecalho input[type="time"] { padding: 5px; border: 1px solid #ccc; width: 120px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 13px; }
         th { background-color: #f2f2f2; color: #333; font-weight: bold; }
@@ -34,7 +37,7 @@
         .total-linha:last-child { border-right: none; }
         .total-linha span { color: #d32f2f; margin-left: 5px; }
 
-        /* --- NOVO: Estilo para o botão de voltar --- */
+        /* --- Estilo para o botão de voltar --- */
         .area-voltar { text-align: center; margin-bottom: 15px; }
         #btn-voltar { background-color: #6c757d; padding: 8px 15px; text-decoration: none; border-radius: 5px; color: white; font-weight: bold; display: inline-block; }
 
@@ -91,23 +94,38 @@
         .status-ok { color: #4CAF50; } 
         .status-fail { color: #f44336; } 
 
+        /* --- NOVO: Estilos para os Botões de Ordenação --- */
+        .coluna-ordem { width: 60px; }
+        .btn-mover { 
+            padding: 2px 5px; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 3px;
+            font-size: 14px;
+            line-height: 1;
+            margin: 0 1px;
+            color: white; /* Para destacar a seta */
+        }
+        .btn-subir { background-color: #2196F3; } /* Azul */
+        .btn-descer { background-color: #ff9800; } /* Laranja */
+
     </style>
 </head>
 <body>
 
     <div class="logo-area">
-        <img src="logo.png" alt="Logo ADOCI Jardim Marília" style="max-height: 80px; margin-bottom: 10px;"> 
+        <img src="logo.png.webp" alt="Logo ADOCI Jardim Marília" style="max-height: 100px; margin-bottom: 20px;"> 
         <div style="font-size: 28px; font-weight: bold; color: #000080;">ADOCI JARDIM MARÍLIA</div>
         <div style="font-size: 16px; color: #808080;">EBS - RELATÓRIO DE FREQUÊNCIA</div>
-        </div>
+    </div>
     
     <div class="area-voltar">
         <a href="index.html" id="btn-voltar">🏠 Voltar para a Página Inicial</a>
     </div>
 
     <div class="info-cabecalho">
-        <div class="campo-info"><label for="data-relatorio">DATA:</label><input type="text" id="data-relatorio" placeholder="DD/MM/AAAA"></div>
-        <div class="campo-info"><label for="hora-relatorio">HORA:</label><input type="text" id="hora-relatorio" placeholder="Ex: 9:00h"></div>
+        <div class="campo-info"><label for="data-relatorio">DATA:</label><input type="date" id="data-relatorio"></div>
+        <div class="campo-info"><label for="hora-relatorio">HORA:</label><input type="time" id="hora-relatorio"></div>
         <div class="campo-info"><label for="professor">PROFESSOR(A):</label><input type="text" id="professor" placeholder="Nome do Professor"></div>
         <div class="campo-info"><label for="turma">TURMA:</label><input type="text" id="turma" value="ADULTOS" readonly style="font-weight: bold; color: #007bff;"></div>
         <div class="campo-info"><label for="licao-relatorio">LIÇÃO:</label><input type="text" id="licao-relatorio" placeholder="Nº da Lição"></div>
@@ -126,13 +144,14 @@
             <tr>
                 <th>Nº</th>
                 <th class="aluno-nome">NOME</th>
-                <th>MATRI (Presença)</th>
-                <th>VIST (Visitante)</th>
-                <th>REVIST (Revista)</th>
+                <th>PRESENÇA</th>
+                <th>VISITANTES</th>
+                <th>REVISTA</th>
                 <th>BÍBLIA</th>
-                <th>OFET (Oferta)</th>
+                <th>OFERTAS</th>
                 <th>PONTOS</th>
                 <th class="coluna-acoes">Ações</th>
+                <th class="coluna-ordem">ORDEM</th> 
             </tr>
         </thead>
         <tbody id="corpo-tabela-alunos">
@@ -145,8 +164,8 @@
         <div class="total-linha"> MATRICULADOS: <span id="total_matriculados">0</span> </div>
         <div class="total-linha"> VISITANTES: <span id="total_visitantes">0</span> </div>
         <div class="total-linha"> REVISTAS: <span id="total_revista">0</span> </div>
-        <div class="total-linha"> BÍBLIA: <span id="total_biblia">0</span> </div>
-        <div class="total-linha"> OFERTA: <span id="total_oferta">0</span> </div>
+        <div class="total-linha"> BÍBLIAS: <span id="total_biblia">0</span> </div>
+        <div class="total-linha"> OFERTAS: <span id="total_oferta">0</span> </div>
     </div>
 
     <div class="ranking-trimestral-container">
@@ -161,15 +180,15 @@
             </div>
     </div>
 
-    <div class="desempenho-individual-container">
+   <div class="desempenho-individual-container">
         <h2>🧑‍🎓 ANÁLISE DE DESEMPENHO INDIVIDUAL (Aula Atual)</h2>
         <div style="display: flex; font-weight: bold; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-bottom: 10px;">
-            <div class="nome">ALUNO</div>
-            <div class="status">PRESENÇA</div>
-            <div class="status">BÍBLIA</div>
-            <div class="status">REVISTA</div>
-            <div class="status">OFERTA</div>
-            <div class="pontos-totais">PONTOS</div>
+            <div style="width: 30%; text-align: left;">ALUNOS</div>
+            <div style="width: 14%; text-align: center;">PRESENÇAS</div>
+            <div style="width: 14%; text-align: center;">BÍBLIAS</div>
+            <div style="width: 14%; text-align: center;">REVISTAS</div>
+            <div style="width: 14%; text-align: center;">OFERTAS</div>
+            <div style="width: 10%; text-align: center;">PONTOS</div>
         </div>
         <div id="container-desempenho-alunos">
             </div>
@@ -229,7 +248,13 @@
             linhasAlunos.forEach((linha, index) => {
                 linha.querySelector('.num-aluno').textContent = (index + 1).toString().padStart(2, '0');
 
-                const nome = linha.querySelector('.nome-aluno').value;
+                // Adiciona o data-old-name se não existir (para alunos carregados)
+                const nomeInput = linha.querySelector('.nome-aluno');
+                if (!nomeInput.getAttribute('data-old-name')) {
+                     nomeInput.setAttribute('data-old-name', nomeInput.value);
+                }
+
+                const nome = nomeInput.value;
                 const presente = linha.querySelector('.presenca').checked;
                 const biblia = linha.querySelector('.biblia').checked;
                 const revista = linha.querySelector('.revista').checked;
@@ -249,7 +274,7 @@
                     biblia: biblia,
                     revista: revista,
                     oferta: oferta,
-                    visitantes: visitantes // Adicionado para persistência
+                    visitantes: visitantes 
                 });
 
                 // Atualizar TOTAIS GERAIS
@@ -400,6 +425,8 @@
 
             const novaLinha = document.createElement('tr');
             novaLinha.classList.add('linha-aluno');
+            
+            // INCLUSÃO DOS BOTÕES DE ORDENAÇÃO NA NOVA CÉLULA (coluna-ordem)
             novaLinha.innerHTML = `
                 <td><span class="num-aluno">${(numeroAlunos + 1).toString().padStart(2, '0')}</span></td>
                 <td class="aluno-nome"><input type="text" class="nome-aluno" value="${novoNome}" placeholder="Nome do Aluno" oninput="atualizarNomeAluno(this)"></td>
@@ -410,6 +437,10 @@
                 <td><input type="checkbox" class="oferta" onchange="calcularTotais()"></td>
                 <td class="coluna-pontos"><span class="pontos-aluno">0</span></td>
                 <td class="coluna-acoes"><button class="btn-remover" onclick="removerAluno(this)">X</button></td>
+                <td class="coluna-ordem">
+                    <button class="btn-mover btn-subir" onclick="moverAluno(this, -1)">⬆️</button>
+                    <button class="btn-mover btn-descer" onclick="moverAluno(this, 1)">⬇️</button>
+                </td>
             `;
 
             corpoTabela.appendChild(novaLinha);
@@ -420,6 +451,9 @@
                  alunos.push(novoNome);
                  setAlunosMatriculados(alunos);
             }
+            // Garante que o atributo data-old-name seja definido
+            novaLinha.querySelector('.nome-aluno').setAttribute('data-old-name', novoNome);
+
             calcularTotais();
         }
         
@@ -435,6 +469,7 @@
             // 2. Remove da tabela e recalcula
             linha.remove();
             calcularTotais();
+            reordenarNumeracao();
         }
 
         function atualizarNomeAluno(input) {
@@ -443,6 +478,7 @@
 
             if (nomeAntigo && nomeAntigo !== novoNome) {
                 let alunos = getAlunosMatriculados();
+                // Acha e substitui o nome antigo pelo novo
                 const index = alunos.indexOf(nomeAntigo);
                 if (index !== -1) {
                     alunos[index] = novoNome;
@@ -451,6 +487,7 @@
             }
             // Atualiza o atributo para rastrear futuras mudanças
             input.setAttribute('data-old-name', novoNome);
+            calcularTotais(); // Recalcula totais caso a mudança afete o ranking
         }
 
         function carregarAlunosIniciais() {
@@ -459,17 +496,13 @@
             corpoTabela.innerHTML = ''; // Limpa a tabela antes de carregar
 
             if (alunos.length === 0) {
-                 // CORREÇÃO 2: Se a lista estiver vazia (primeiro acesso/reset), 
-                 // adiciona os alunos de teste E SALVA IMEDIATAMENTE.
-                 alunos = ["Aluno Teste A", "Aluno Teste B"];
-                 setAlunosMatriculados(alunos); // AGORA A LISTA É SALVA!
+                 // Se a lista estiver vazia (primeiro acesso/reset), adiciona nomes iniciais
+                 alunos = ["Aluno Teste A", "Aluno Teste B", "Aluno Teste C"];
+                 setAlunosMatriculados(alunos); 
             }
 
             alunos.forEach(nome => {
                 adicionarAluno(nome);
-                // Adiciona o nome antigo para o rastreamento de mudanças no input
-                const input = corpoTabela.lastElementChild.querySelector('.nome-aluno');
-                input.setAttribute('data-old-name', nome);
             });
             calcularTotais();
         }
@@ -479,6 +512,7 @@
                 localStorage.removeItem(KEY_ALUNOS);
                 localStorage.removeItem(KEY_RELATORIOS);
                 carregarAlunosIniciais(); // Recarrega com nomes iniciais
+                reordenarNumeracao();
                 alert("Dados trimestrais de ADULTOS resetados com sucesso.");
             }
         }
@@ -487,15 +521,20 @@
         function salvarRelatorio() {
             const { dadosAlunosSessao } = calcularTotais();
             
-            const data = document.getElementById('data-relatorio').value;
-            if (!data) {
+            // Para inputs type="date" e type="time", o valor é AAAA-MM-DD e HH:MM
+            const dataPadrao = document.getElementById('data-relatorio').value;
+            if (!dataPadrao) {
                 alert("Por favor, preencha a DATA do relatório antes de salvar.");
                 return;
             }
 
+            // Formatação da data para o CSV/Alerta (opcional, mas mais amigável)
+            const [ano, mes, dia] = dataPadrao.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+            
             // 1. SALVAR NO LOCAL STORAGE (Trimestral) - PRINCIPAL
             const relatorioSessao = {
-                data: data,
+                data: dataPadrao, // Salva no formato padrão para facilitar comparações futuras
                 alunos: dadosAlunosSessao
             };
             addRelatorioTrimestre(relatorioSessao);
@@ -511,7 +550,7 @@
 
             let conteudo = `RELATÓRIO DE FREQUÊNCIA - ADOCI JARDIM MARÍLIA - TURMA: ${turma}\n`;
             conteudo += `--------------------------------------------------\n`;
-            conteudo += `DATA: ${data} | HORA: ${hora} | PROFESSOR: ${professor}\n`;
+            conteudo += `DATA: ${dataFormatada} | HORA: ${hora} | PROFESSOR: ${professor}\n`;
             conteudo += `LIÇÃO: ${licao} | TEMA: ${tema}\n`;
             conteudo += `--------------------------------------------------\n\n`;
 
@@ -535,7 +574,7 @@
             });
 
             // Gerar download do arquivo CSV
-            const nomeArquivo = `Relatorio_EBS_${turma}_${data.replace(/\//g, '_')}_AULA_${getRelatoriosTrimestre().length}.csv`;
+            const nomeArquivo = `Relatorio_EBS_${turma}_${dataFormatada.replace(/\//g, '_')}_AULA_${getRelatoriosTrimestre().length}.csv`;
             
             const linkDownload = document.createElement('a');
             // Mime type alterado para text/csv
@@ -550,7 +589,59 @@
             calcularTotais(); // Recarrega o ranking trimestral atualizado
         }
 
-        document.addEventListener('DOMContentLoaded', carregarAlunosIniciais);
+        // --- NOVO: FUNÇÃO PARA MOVER ALUNO NA LISTA (REORDENAÇÃO) ---
+        function moverAluno(botao, direcao) {
+            const linhaAtual = botao.closest('tr');
+            const corpoTabela = document.getElementById('corpo-tabela-alunos');
+            const linhas = Array.from(corpoTabela.children);
+            const indiceAtual = linhas.indexOf(linhaAtual);
+            const indiceNovo = indiceAtual + direcao;
+
+            // Verifica se o novo índice é válido
+            if (indiceNovo >= 0 && indiceNovo < linhas.length) {
+                const nomeAluno = linhaAtual.querySelector('.nome-aluno').value;
+                
+                // 1. Mover no DOM (Tabela HTML)
+                if (direcao === -1) { // Mover para cima
+                    corpoTabela.insertBefore(linhaAtual, linhas[indiceNovo]);
+                } else if (direcao === 1) { // Mover para baixo
+                    // Se estiver movendo para baixo, insere *depois* do alvo (indiceNovo)
+                    // Para inserir depois de linhas[indiceNovo], usamos linhas[indiceNovo + 1] como referência.
+                    const proximaLinha = linhas[indiceNovo + 1];
+                    corpoTabela.insertBefore(linhaAtual, proximaLinha);
+                }
+
+                // 2. Mover no Local Storage (Lista de Matriculados)
+                let alunos = getAlunosMatriculados();
+                
+                // Remove o aluno da posição atual
+                const alunoMovido = alunos.splice(indiceAtual, 1)[0]; 
+                // Insere o aluno na nova posição
+                alunos.splice(indiceNovo, 0, alunoMovido); 
+                
+                setAlunosMatriculados(alunos);
+                
+                // 3. Recalcular e re-numerar
+                calcularTotais(); 
+                reordenarNumeracao();
+            }
+        }
+
+        // --- NOVO: FUNÇÃO AUXILIAR PARA CORRIGIR A NUMERAÇÃO ---
+        function reordenarNumeracao() {
+            const corpoTabela = document.getElementById('corpo-tabela-alunos');
+            const linhasAlunos = corpoTabela.querySelectorAll('.linha-aluno');
+            
+            linhasAlunos.forEach((linha, index) => {
+                linha.querySelector('.num-aluno').textContent = (index + 1).toString().padStart(2, '0');
+            });
+        }
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+             carregarAlunosIniciais();
+             reordenarNumeracao(); // Garante que a numeração está correta no carregamento
+        });
     </script>
 </body>
 </html>
