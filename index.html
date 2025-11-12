@@ -14,6 +14,14 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+
+            /* --- NOVO: ESTILOS PARA LOGO NO BACKGROUND --- */
+            background-image: url('logo.png'); /* 1. Caminho para sua logo */
+            background-repeat: no-repeat; /* 2. Garante que a imagem apareça apenas uma vez */
+            background-position: center 90%; /* 3. Centraliza a imagem e move para baixo */
+            background-size: 200px; /* 4. Define o tamanho da logo no fundo */
+            background-attachment: fixed; /* 5. Fixa a imagem no viewport */
+            /* --- FIM DOS ESTILOS DE BACKGROUND --- */
         }
 
         .header {
@@ -24,6 +32,8 @@
             color: white;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            /* Importante: Adicionar transparência para o fundo aparecer um pouco */
+            opacity: 0.95; 
         }
 
         .header h1 {
@@ -60,6 +70,8 @@
             color: #333;
             cursor: pointer;
             position: relative;
+            /* Importante: Adicionar transparência para o fundo aparecer um pouco */
+            opacity: 0.98; 
         }
 
         .card-classe:hover {
